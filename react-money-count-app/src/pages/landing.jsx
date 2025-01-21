@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import PaymentsList from "../components/payment/payments-list"
+import PaymentsList from "../components/payment/payment-list"
 import CreatePaymentModel from "../components/payment/payment-create-modal"
 
 const Landing = () => {

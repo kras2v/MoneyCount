@@ -1,74 +1,12 @@
 import React, { useState } from "react"
 import CategoryList from "../components/category/category-list";
-import CategoryItem from "../components/category/category-item"
+import CategoryCreateModal from "../components/category/category-create-modal"
+import New from "../../public/icons/new.svg"
 
 const Categories = () => {
-
-	const putCategory = (paymentToEdit) => {
-		fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category", {
-			method: "PUT",
-			headers: {
-				'Accept': 'application/json',
-				'Content-type': 'application/json'
-			},
-			body: JSON.stringify(paymentToEdit)
-		})
-			.then(res => res.json())
-			.then(res => {
-				if (res.status === true && res.data !== null) {
-					setPayment(res.data);
-					alert('Updated succeslly');
-					window.location.reload();
-				}
-				if (res.status === false)
-					alert('Something went wrong');
-			});
-	}
-
-	const postPayment = (paymentToEdit) => {
-		fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category", {
-			method: "POST",
-			headers: {
-				'Accept': 'application/json',
-				'Content-type': 'application/json'
-			},
-			body: JSON.stringify(paymentToEdit)
-		})
-			.then(res => res.json())
-			.then(res => {
-				if (res.status === true && res.data !== null) {
-					setPayment(res.data);
-					alert('Created succeslly');
-					window.location.reload();
-				}
-				if (res.status === false)
-					alert('Something went wrong');
-			});
-	}
-
-	const deletePayment = (id) => {
-		fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category?id=" + id, {
-			method: "DELETE",
-			headers: {
-				'Accept': 'application/json',
-				'Content-type': 'application/json'
-			}
-		})
-			.then(res => res.json())
-			.then(res => {
-				if (res.status === true) {
-					alert('Deleted succeslly');
-					setPayment({
-						id: -1
-					})
-					navigate('/');
-				}
-				if (res.status === false)
-					alert('Something went wrong');
-			});
-	}
-
+	const [categoryId, setCategoryId] = useState(null);
 	const [show, setShow] = useState(false);
+
 	return (
 		<>
 			<div className="container my-5">
@@ -78,17 +16,18 @@ const Categories = () => {
 					</div>
 					<div className="col-2">
 						<button className="btn btn-outline-dark custom-btn" type="button"
-							onClick={() => console.log(2)}>
-							<img src={"../../../../public/icons/New.svg"} alt="NewItem" className="category-icon"></img>
+							onClick={() => setShow(true)}>
+							<img src={New} alt="NewItem" className="category-icon"></img>
 							Create new
 						</button>
 					</div>
 				</div>
 				<div className="row">
-					<CategoryList updateValueAndClose={() => { console.log(1) }}
+					<CategoryList function={(props) => { setCategoryId(props.data.id); setShow(true); }}
 						amountInRow={100000000} />
 				</div>
 			</div>
+			<CategoryCreateModal show={show} handleClose={() => { setShow(false); setCategoryId(null); }} categoryId={categoryId} />
 		</>
 	)
 }

@@ -9,7 +9,7 @@ const CategoryModal = (props) => {
 			props.setCategoryToUpdate({
 				id: param.data.id,
 				name: param.data.name,
-				icon: "../../public/icons/" + param.data.icon + ".svg"
+				icon:param.data.icon
 			});
 		}
 		console.log(param.data.id)

@@ -12,7 +12,7 @@ const CategoryList = (props) => {
 					setCategories(res.data.categories);
 				}
 				if (res.data.count === 0) {
-					alert("There is no payment in a system.");
+					alert("There is no category in a system.");
 				}
 			})
 			.catch(err => alert("Error getting data."));

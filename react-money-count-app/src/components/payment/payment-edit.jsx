@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom";
-import { Form, FormGroup, Modal } from "react-bootstrap"
+import { Form } from "react-bootstrap"
 import CategoryModal from "../category/category-payment-modal";
+import NoImage from "../../../public/icons/no-image.svg"
 
 const EditPayment = (props) => {
 	const [payment, setPayment] = useState(null);
@@ -34,7 +35,7 @@ const EditPayment = (props) => {
 					setCategory({
 						id: paym.data.category.id,
 						name: paym.data.category.name,
-						icon: "../../public/icons/" + paym.data.category.icon + ".svg"
+						icon: paym.data.category.icon
 					})
 				})
 				.catch(err => {
@@ -44,11 +45,6 @@ const EditPayment = (props) => {
 				});
 		}
 		else {
-			setCategory({
-				id: 0,
-				name: "Other",
-				icon: "../../public/icons/" + "Other" + ".svg"
-			});
 			setIsEligible(true);
 		}
 	}, [])
@@ -143,7 +139,7 @@ const EditPayment = (props) => {
 						<Form noValidate validated={validated} onSubmit={handleSave} className="w-100" style={{ maxWidth: '80%' }}>
 							<Form.Group className="my-3" controlId="formpaymentAmount">
 								<Form.Label>Amount</Form.Label>
-								<Form.Control name="amount" value={payment?.amount || 0} required min="0.01" max="9007199254740991" step="0.01" type="number" placeholder="0.0" onChange={handleFieldChange} />
+								<Form.Control name="amount" value={payment?.amount || ""} required min="0.01" max="9007199254740991" step="0.01" type="number" placeholder="Enter a number"  onChange={handleFieldChange} />
 								<Form.Control.Feedback type="invalid">
 									Please enter correct amount
 								</Form.Control.Feedback>
@@ -163,9 +159,9 @@ const EditPayment = (props) => {
 								</Form.Control.Feedback>
 							</Form.Group>
 							<Form.Group className="my-3" controlId="formpaymentCategoryId">
-								<button value={category.id} className="btn btn-dark w-100 d-flex justify-content-center" type="button" onClick={() => { setShowCategories(true); }}>
-									<img src={category.icon} alt={category.name} style={{ filter: 'invert(1)', marginRight: '2px' }} className="category-icon"></img>
-									{category.name}
+								<button value={category.id} className="button btn-dark w-100 d-flex justify-content-center align-items-center gap-3" type="button" onClick={() => { setShowCategories(true); }}>
+									<img src={category?.icon ? category.icon : NoImage} alt={category.name} style={{ filter: 'invert(1)', marginRight: '2px' }} className="category-icon"></img>
+									{category?.name ? category.name : "Choose category"}
 								</button>
 							</Form.Group>
 							<Form.Group className="my-3" controlId="formpaymentPaymentDate">
@@ -195,7 +191,7 @@ const EditPayment = (props) => {
 						<CategoryModal
 							setCategoryToUpdate={setCategory}
 							show={showCategories}
-							handleClose={() => { setShowCategories(false); }}/>
+							handleClose={() => { setShowCategories(false); }} />
 					</div>
 					: ''
 			}

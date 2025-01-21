@@ -1,5 +1,5 @@
 import React from "react"
-import NoImage from "../../../no-image.png"
+import NoImage from "../../../public/icons/no-image.svg"
 import { useNavigate } from 'react-router-dom';
 
 const PaymentItem = (props) => {
@@ -9,7 +9,7 @@ const PaymentItem = (props) => {
 			<div className="row border border-secondary">
 				<div className="col-1 my-2 d-flex justify-content-center align-items-center">
 					<img
-						src={"/../../public/icons/" + props.data.category.icon + ".svg" || NoImage}
+						src={props.data.category ? props.data.category.icon ? props.data.category.icon : NoImage : NoImage}
 						style={{ width: 30, height: 30 }}
 						alt="Category Icon"
 					/>

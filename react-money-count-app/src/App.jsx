@@ -4,7 +4,7 @@ import { BrowserRouter, Link, Routes, Route } from 'react-router-dom'
 import Landing from './pages/landing'
 import Categories from './pages/categories'
 import PaymentDetails from './components/payment/payment-details'
-import EditPayment from './components/payment/edit-payment'
+import EditPayment from './components/payment/payment-edit'
 
 function App() {
 	return (
