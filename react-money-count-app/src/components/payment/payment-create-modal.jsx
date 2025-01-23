@@ -1,6 +1,6 @@
 import React from "react"
 import { Modal } from "react-bootstrap"
-import EditPayment from "./payment-edit"
+import EditPayment from "./payment-edit-form"
 
 const CreatePaymentModal = (props) => {
 	return (

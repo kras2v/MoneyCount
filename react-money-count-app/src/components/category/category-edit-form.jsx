@@ -161,9 +161,10 @@ const CategoryEditForm = (props) => {
 								Please enter correct name
 							</Form.Control.Feedback>
 						</Form.Group>
-						<Form.Group className="mt-5 d-flex align-self-center">
+						<Form.Group className="mt-5 gap-5 d-flex align-self-center">
 							<button className="button btn-dark">
-								Create
+								{props.categoryId && category && category.id ?
+									"Update" : "Create"}
 							</button>
 							{props.categoryId && category && category.id ?
 								(

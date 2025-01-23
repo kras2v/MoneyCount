@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import PaymentItem from "./payment-item";
 import ReactPaginate from "react-paginate";
+import { Fragment } from "react";
 
 const PaymentsList = () => {
 	const [payments, setPayments] = useState(null);
@@ -30,14 +31,35 @@ const PaymentsList = () => {
 		setPage(pageIndex.selected);
 	}
 
+	const getUnique = (payments) => {
+		const uniqueArrayOfDates = [...new Set(payments.map((paym) => {
+			return (paym.paymentDate.split("T")[0]);
+		}))];
+		return uniqueArrayOfDates;
+	}
+
 	return (
 		<>
-			{payments && payments.length > 0 ?
-				(
-					payments.map((p, i) => <PaymentItem key={i} data={p} />)
-				) : ""
+			{
+				payments && payments.length > 0 ?
+					(getUnique(payments).map((date, i) =>
+					(
+						<Fragment key={i}>
+							<div className="row border border-dark justify-content-center">
+								{new Date(date).toUTCString().slice(4, 16)}
+							</div>
+							{
+								payments.filter(p => p.paymentDate.split("T")[0] === date)
+									.map((p, j) =>
+										<PaymentItem key={p.id} data={p} />
+									)
+							}
+						</Fragment>
+					)))
+					: ""
 			}
-			<div className="d-flex justify-content-center my-5">
+			<div className="d-flex justify-content-center my-5 p-0">
+			<hr/>
 				<ReactPaginate
 					previousLabel={'previous'}
 					nextLabel={'next'}
@@ -45,7 +67,7 @@ const PaymentsList = () => {
 					breakClassName={'page-link'}
 					pageCount={paymentsCount}
 					marginPagesDisplayed={2}
-					pageRangeDisplayed={5}
+					pageRangeDisplayed={3}
 					onPageChange={handlePageCLick}
 					containerClassName={'pagination'}
 					pageClassName={'page-item'}

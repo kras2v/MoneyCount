@@ -139,7 +139,7 @@ const EditPayment = (props) => {
 						<Form noValidate validated={validated} onSubmit={handleSave} className="w-100" style={{ maxWidth: '80%' }}>
 							<Form.Group className="my-3" controlId="formpaymentAmount">
 								<Form.Label>Amount</Form.Label>
-								<Form.Control name="amount" value={payment?.amount || ""} required min="0.01" max="9007199254740991" step="0.01" type="number" placeholder="Enter a number"  onChange={handleFieldChange} />
+								<Form.Control name="amount" value={payment?.amount || ""} required min="0.01" max="9007199254740991" step="0.01" type="number" placeholder="Enter a number" onChange={handleFieldChange} />
 								<Form.Control.Feedback type="invalid">
 									Please enter correct amount
 								</Form.Control.Feedback>
@@ -168,13 +168,13 @@ const EditPayment = (props) => {
 								<Form.Label>Date</Form.Label>
 								<Form.Control name="paymentDate" value={payment?.paymentDate ?
 									payment.paymentDate.slice(0, 10) :
-									new Date().toISOString().split('T')[0]} type="date" placeholder="Today" onChange={handleFieldChange} />
+									new Date().toISOString().split('T')[0]} type="date" max={new Date().toISOString().split('T')[0]} placeholder="Today" onChange={handleFieldChange} />
 								<Form.Control.Feedback type="invalid">
-									Please enter correct date
+									Please enter date not earlier then today
 								</Form.Control.Feedback>
 							</Form.Group>
 							<Form.Group className="d-flex mt-5 gap-5 justify-content-between">
-								<button className="button" type="submit">
+								<button className="button  btn-dark" type="submit">
 									{params.paymentid === undefined ? "Create" :
 										params.paymentid && payment && payment.id ?
 											"Update" : ''}

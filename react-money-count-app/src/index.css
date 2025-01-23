@@ -1,3 +1,10 @@
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden; 
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -5,12 +12,16 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.payment-list-container {
+	margin-top: 20%;
 }
 
 a {
@@ -20,15 +31,6 @@ a {
 }
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  /* display: flex; */
-  /* flex-direction: row; */
-  /* place-items: center; */
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
@@ -97,5 +99,10 @@ button:focus-visible {
 .category-icon {
 	width: 20px;
 	height: 20px;
-	transition: filter 0.3s ease; 
+	transition: filter 0.3s ease;
+}
+
+.statistics-container{
+	min-height: 100%;
+	min-width: 100%;
 }
