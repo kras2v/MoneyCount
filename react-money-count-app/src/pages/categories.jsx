@@ -11,7 +11,7 @@ const Categories = () => {
 
 	return (
 		<>
-			<div className="container my-5">
+			<div className="custom-container">
 				<div className="row border border-dark justify-content-between align-items-center">
 					<div className="col-10 my-3">
 						<h2>Categories</h2>

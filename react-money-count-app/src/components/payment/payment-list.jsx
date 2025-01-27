@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import PaymentItem from "./payment-item";
 import ReactPaginate from "react-paginate";
 import { Fragment } from "react";
@@ -13,72 +13,86 @@ const PaymentsList = () => {
 	}, [page]);
 
 	const getPayments = () => {
-		fetch(import.meta.env.VITE_REACT_APP_API_URL + "Payment?pageIndex=" + page + "&pageSize=" + import.meta.env.VITE_REACT_APP_PAGING_SIZE)
-			.then(res => res.json())
-			.then(res => {
+		fetch(
+			import.meta.env.VITE_REACT_APP_API_URL +
+			"Payment?pageIndex=" +
+			page +
+			"&pageSize=" +
+			import.meta.env.VITE_REACT_APP_PAGING_SIZE
+		)
+			.then((res) => res.json())
+			.then((res) => {
 				if (res.status === true && res.data.count > 0) {
 					setPayments(res.data.payments);
-					setPaymentsCount(Math.ceil(res.data.count / import.meta.env.VITE_REACT_APP_PAGING_SIZE))
+					setPaymentsCount(Math.ceil(res.data.count / import.meta.env.VITE_REACT_APP_PAGING_SIZE));
 				}
 				if (res.data.count === 0) {
-					alert("There is no payment in a system.");
+					alert("There is no payment in the system.");
 				}
 			})
-			.catch(err => alert("Error getting data."));
-	}
+			.catch((err) => alert("Error getting data."));
+	};
 
-	const handlePageCLick = (pageIndex) => {
+	const handlePageClick = (pageIndex) => {
 		setPage(pageIndex.selected);
-	}
+	};
 
 	const getUnique = (payments) => {
-		const uniqueArrayOfDates = [...new Set(payments.map((paym) => {
-			return (paym.paymentDate.split("T")[0]);
-		}))];
+		const uniqueArrayOfDates = [
+			...new Set(
+				payments.map((paym) => {
+					return paym.paymentDate.split("T")[0];
+				})
+			),
+		];
 		return uniqueArrayOfDates;
-	}
+	};
 
 	return (
 		<>
-			{
-				payments && payments.length > 0 ?
-					(getUnique(payments).map((date, i) =>
-					(
-						<Fragment key={i}>
-							<div className="row border border-dark justify-content-center">
-								{new Date(date).toUTCString().slice(4, 16)}
-							</div>
-							{
-								payments.filter(p => p.paymentDate.split("T")[0] === date)
-									.map((p, j) =>
-										<PaymentItem key={p.id} data={p} />
-									)
-							}
-						</Fragment>
-					)))
-					: ""
-			}
+			{payments && payments.length > 0 ? (
+				getUnique(payments).map((date, i) => (
+					<Fragment key={i}>
+						<div className="row border border-dark justify-content-center bg-light rounded my-3 py-2">
+							<h4 className="text-center text-secondary">{new Date(date).toUTCString().slice(4, 16)}</h4>
+						</div>
+						{payments
+							.filter((p) => p.paymentDate.split("T")[0] === date)
+							.map((p) => (
+								<PaymentItem key={p.id} data={p} />
+							))}
+					</Fragment>
+				))
+			) : (
+				<div className="text-center mt-5">
+					<h4>No payments found.</h4>
+				</div>
+			)}
+
 			<div className="d-flex justify-content-center my-5 p-0">
-			<hr/>
 				<ReactPaginate
-					previousLabel={'previous'}
-					nextLabel={'next'}
-					breakLabel={'...'}
-					breakClassName={'page-link'}
+					previousLabel={"<"}
+					nextLabel={">"}
+					breakLabel={"..."}
+					breakClassName={"page-link"}
 					pageCount={paymentsCount}
 					marginPagesDisplayed={2}
-					pageRangeDisplayed={3}
-					onPageChange={handlePageCLick}
-					containerClassName={'pagination'}
-					pageClassName={'page-item'}
-					pageLinkClassName={'page-link'}
-					previousClassName={'page-link'}
-					nextClassName={'page-link'}
-					activeClassName={'page-link'}
+					pageRangeDisplayed={1}
+					onPageChange={handlePageClick}
+					containerClassName={"pagination"}
+					pageClassName={"page-item"}
+					pageLinkClassName={"page-link"}
+					previousClassName={
+						"page-item stylish-btn me-5"
+					}
+					nextClassName={
+						"page-item stylish-btn ms-5"
+					}
+					activeClassName={"active"}
 				/>
 			</div>
 		</>
-	)
-}
+	);
+};
 
-export default PaymentsList
+export default PaymentsList;

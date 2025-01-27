@@ -5,7 +5,11 @@ import CategoryEditForm from "./category-edit-form"
 const CategoryCreateModal = (props) => {
 	return (
 		<>
-			<Modal show={props.show} onHide={props.handleClose} centered>
+			<Modal
+				show={props.show}
+				onHide={props.handleClose}
+				centered
+			>
 				<Modal.Header closeButton>
 					<Modal.Title>
 						{props?.categoryId ?

@@ -147,16 +147,39 @@ const CategoryEditForm = (props) => {
 		<>
 			{
 				isEligible ?
-					(<Form noValidate validated={validated} onSubmit={handleSave} className="d-flex flex-column h-100">
+					(<Form
+						noValidate
+						validated={validated}
+						onSubmit={handleSave}
+						className="d-flex flex-column h-100">
 						<Form.Group className="d-flex flex-column align-items-center my-2 gap-3">
-							<Image width="50" height="50" src={
-								category?.icon ? category.icon : NoImage} />
-							<Form.Label className="btn btn-dark w-100" htmlFor="file-upload"> Choose an image </Form.Label>
-							<input type="file" id="file-upload" onChange={handleIconUpload} style={{ display: "none" }} />
+							<Image
+								width="50"
+								height="50"
+								src={category?.icon ? category.icon : NoImage}
+							/>
+							<Form.Label
+								className="btn btn-dark w-100"
+								htmlFor="file-upload">
+								Choose an image
+							</Form.Label>
+							<input
+								type="file"
+								id="file-upload"
+								className="d-none"
+								onChange={handleIconUpload}
+							/>
 						</Form.Group>
 						<Form.Group className="my-2">
 							<Form.Label> Name </Form.Label>
-							<Form.Control name="name" value={category?.name || ''} required type="text" placeholder="e.g. Food" onChange={handleFieldChange} />
+							<Form.Control
+								name="name"
+								value={category?.name || ''}
+								required
+								type="text"
+								placeholder="e.g. Food"
+								onChange={handleFieldChange}
+							/>
 							<Form.Control.Feedback type="invalid">
 								Please enter correct name
 							</Form.Control.Feedback>
@@ -168,7 +191,10 @@ const CategoryEditForm = (props) => {
 							</button>
 							{props.categoryId && category && category.id ?
 								(
-									<button className="button btn-danger" type="button" onClick={() => deleteCategory(props.categoryId)}>
+									<button
+										className="button btn-danger"
+										type="button"
+										onClick={() => deleteCategory(props.categoryId)}>
 										Delete
 									</button>
 								) : ''

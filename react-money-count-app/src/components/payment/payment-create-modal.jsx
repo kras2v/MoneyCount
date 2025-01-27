@@ -5,7 +5,12 @@ import EditPayment from "./payment-edit-form"
 const CreatePaymentModal = (props) => {
 	return (
 		<>
-			<Modal show={props.show} onHide={props.handleClose} centered fullscreen>
+			<Modal
+				show={props.show}
+				onHide={props.handleClose}
+				centered
+				fullscreen
+			>
 				<Modal.Header closeButton>
 					<Modal.Title>
 						Add new payment

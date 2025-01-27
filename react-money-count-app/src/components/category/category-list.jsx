@@ -19,16 +19,17 @@ const CategoryList = (props) => {
 	}, []);
 
 	return (
-		<div className="modal-container d-flex flex-column">
+		<div className="modal-container p-4 d-flex flex-column">
 			{Array.from({ length: Math.ceil(categories.length / props.amountInRow) }, (_, rowIndex) => (
-				<div className="row custom-row flex-row align-items-center" key={rowIndex}>
+				<div className="custom-row flex-row align-items-center" key={rowIndex}>
 					{categories
 						.slice(rowIndex * props.amountInRow, rowIndex * props.amountInRow + props.amountInRow)
 						.map((category) => (
 							<CategoryItem
 								key={category.id}
 								data={category}
-								function={props.function} />
+								function={props.function}
+							/>
 						))}
 				</div>
 			))}

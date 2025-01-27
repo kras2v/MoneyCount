@@ -1,34 +1,51 @@
 import React, { useEffect, useState } from "react";
-import $ from "jquery";
+import $, { data } from "jquery";
 import { Chart } from "chart.js";
 import "daterangepicker";
 import "daterangepicker/daterangepicker.css";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import moment from "moment";
+import { formatNumber } from "chart.js/helpers";
 
 const Statistics = () => {
+	const [chartData, setChartData] = useState(null)
 	const [periodLabel, setPeriodLabel] = useState(null);
 	const [categories, setCategories] = useState(null);
 	const [payments, setPayments] = useState(null);
 	const [newPayments, setNewPayments] = useState(null);
 	const [total, setTotal] = useState(0);
 	const [myChart, setMyChart] = useState(null);
+	const [isInit, setIsInit] = useState(null);
 
 	const getPayments = () => {
 		if (payments === null) {
 			fetch(import.meta.env.VITE_REACT_APP_API_URL + "Payment/get-all-payments")
-			.then(res => res.json())
-			.then(res => {
-				if (res.status === true) {
-					setPayments(res.data.payments);
-					console.log("data received");
-				}
-			})
-			.catch(err => alert("Error getting data."));
+				.then(res => res.json())
+				.then(res => {
+					if (res.status === true) {
+						setPayments(res.data.payments);
+						console.log("data received");
+					}
+				})
+				.catch(err => alert("Error getting data."));
 		}
 	}
 
 	const getDateRangePicker = () => {
-		$('input[name="demo"]').daterangepicker({
+
+		function cb(start, end, label)
+		{
+			$('#chart-input input').html(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
+			setTotal(getTotal(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
+			setNewPayments(getNewData(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
+			if (label === "Custom Range")
+				setPeriodLabel(" from " + start.format('YYYY-MM-DD') + " to " + end.format('YYYY-MM-DD'));
+			else
+				setPeriodLabel(label);
+			getContent();
+		}
+
+		$('input[name="chart-input"]').daterangepicker({
 			autoUpdateInput: false,
 			locale: {
 				cancelLabel: 'Clear'
@@ -44,14 +61,7 @@ const Statistics = () => {
 			},
 			"startDate": "01/16/2025",
 			"endDate": "01/22/2025"
-		}, function (start, end, label) {
-			setTotal(getTotal(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
-			setNewPayments(getNewData(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
-			if (label === "Custom Range")
-				setPeriodLabel(" from " + start.format('YYYY-MM-DD') + " to " + end.format('YYYY-MM-DD'));
-			else
-				setPeriodLabel(label);
-		});
+		}, function(start, end, label) {cb(start, end, label)});
 	}
 
 	const getAllCategories = () => {
@@ -71,74 +81,112 @@ const Statistics = () => {
 	}
 
 	const getChart = () => {
-		const data = categories.map(c => ({ 
-			category: c.name,
-			amount: newPayments.filter(p => p.category.id === c.id).reduce((x, y) => x + y.amount, 0)
-		}));
-		return (
-			new Chart(
-				document.getElementById('test-chart'),
-				{
-					type: 'doughnut',
-					data: {
-						labels: data.map(row => row.category),
-						datasets: [
-							{
-								label: 'Amount',
-								data: data.map(row => row.amount)
-							}
-						]
+		if (newPayments){
+			setIsInit(true);
+			const data = categories.map(c => ({
+				category: c.name,
+				amount: newPayments.filter(p => p.category.id === c.id).reduce((x, y) => x + y.amount, 0)
+			}));
+			setChartData(data);
+			return (
+				new Chart(
+					document.getElementById('test-chart'),
+					{
+						type: 'doughnut',
+						data: {
+							labels: data.map(row => row.category),
+							datasets: [
+								{
+									label: 'Amount',
+									data: data.map(row => row.amount)
+								}
+							]
+						}
 					}
-				}
+				)
 			)
-		)
+		}
 	}
 
 	const getTotal = (start, end) => {
 		if (payments) {
-			return Math.round(payments.filter(p => (moment(p.paymentDate.split('T')[0]).isSameOrAfter(start) && moment(p.paymentDate.split('T')[0]).isSameOrBefore(end)))
+			return Math.round(payments
+				.filter(p => (moment(p.paymentDate.split('T')[0]).isSameOrAfter(start) && moment(p.paymentDate.split('T')[0]).isSameOrBefore(end)))
+				.filter(p => p.amount < 0)
 				.reduce((x, y) => x + y.amount, 0) * 100) / 100;
 		}
 	};
 
 	const getNewData = (start, end) => {
 		if (payments) {
-			return payments.filter(p => (moment(p.paymentDate.split('T')[0]).isSameOrAfter(start) && moment(p.paymentDate.split('T')[0]).isSameOrBefore(end)));
+			return payments
+			.filter(p => (moment(p.paymentDate.split('T')[0]).isSameOrAfter(start) && moment(p.paymentDate.split('T')[0]).isSameOrBefore(end)))
+			.filter(p => p.amount < 0);
 		}
 	};
 
+	const getContent = async () => {
+		const dataJson = JSON.stringify(chartData);
+
+		const genAI = new GoogleGenerativeAI("AIzaSyAH5-nJiYVADHFE7LFkY37HK2bzhZAYqrQ");
+		const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+		const prompt = `My spendings are following: ${dataJson} during ${periodLabel},
+			BRIEFLY give me 3 advise how to improve my budget`;
+
+		const result = await model.generateContent(prompt);
+		console.log(result.response.text());
+	}
+
 	useEffect(() => {
+		const today = moment().format('YYYY-MM-DD');
 		if (myChart)
 			myChart.destroy();
 		getPayments();
 		getAllCategories();
+		if (!newPayments)
+			setNewPayments(getNewData(today, today));
 		getDateRangePicker();
+		if (!periodLabel)
+			setPeriodLabel("Today");
 		if (categories && newPayments)
+		{
+			if (total === 0 && !isInit)
+				setTotal(getTotal(moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')))
 			setMyChart(getChart());
-	}, [payments, newPayments, categories]);
+			setIsInit(true);
+		}
+	}, [payments, categories, newPayments, isInit]);
 
 	return (
 		<>
-			<div className="statistics-container mt-5">
-				<div className="summary-amount d-flex flex-row">
+			<div className="custom-container p-4">
+				<div className="summary-amount d-flex flex-row align-items-center justify-content-between mb-4">
 					<div className="count-amount" id="count-amount">
-						<h3>{total + " "}
-							{periodLabel && periodLabel
-								? periodLabel
-								: " Select date range"}</h3>
+						<h3 className="text-dark">{-total}{"₴ Spent "}
+							{periodLabel && periodLabel ? periodLabel : "Select date range"}</h3>
 					</div>
 				</div>
-				<div className="d-flex mt-5 flex-column align-items-center gap-3">
-					<div className="input-group h-25 w-100 d-flex">
+				<div className="d-flex mt-5 flex-column align-items-center gap-4">
+					<div className="input-group w-75">
 						<div className="input-group-prerend">
-							<span className="input-group-text btn-dark">
+							<span className="input-group-text btn btn-dark">
 								<i className="fa-regular fa-calendar"></i>
 							</span>
 						</div>
-						<input className="btn-dark border-0 ml-1" 
-							type="text" id="demo" name="demo" placeholder="Select date range" value={"Select date range"} onChange={() => {}} />
+						<input 
+							className="form-control rounded-3 border-0 bg-dark text-white"
+							type="text"
+							id="chart-input"
+							name="chart-input"
+							placeholder="Select date range"
+							value={"Select date range"}
+							onChange={() => { }}
+						/>
 					</div>
-					<canvas className="w-50 h-50" id="test-chart" />
+					<div className="chart-container mt-4" style={{maxWidth: "40%"}}>
+						<canvas className="w-100 h-100" id="test-chart" />
+					</div>
 				</div>
 			</div>
 		</>

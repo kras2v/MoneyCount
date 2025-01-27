@@ -5,6 +5,7 @@ body {
   overflow: hidden; 
 }
 
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -20,14 +21,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.payment-list-container {
-	margin-top: 20%;
+.custom-container {
+	margin-top: 10%;
+}
+
+.modal-container{
+	max-width: '80%';
+	background-color: '#f8f9fa';
+	padding: '30px';
+	border-radius: '12px';
+	box-shadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
 }
 
 a {
   font-weight: 500;
   color: #646cff;
-  text-decoration: inherit;
+  text-decoration: none;
 }
 a:hover {
   color: #535bf2;
@@ -79,7 +88,8 @@ button:focus-visible {
 	justify-content: center;
 }
 
-.custom-row > * {
+.custom-row {
+	display: flex;
 	width: auto;
 }
 
@@ -90,6 +100,11 @@ button:focus-visible {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+
+	transition: 'all 0.3s ease';
+	border-radius: '10px';
+	box-shadow: '0 4px 10px rgba(0, 0, 0, 0.1)';
+	background-color: 'white';
 }
 
 .custom-btn:hover img{
@@ -100,9 +115,126 @@ button:focus-visible {
 	width: 20px;
 	height: 20px;
 	transition: filter 0.3s ease;
+
+	width: '40px';
+	height: '40px';
+	object-fit: 'contain';
+	border-radius: '50%';
+	transition: 'transform 0.3s ease';
 }
 
-.statistics-container{
-	min-height: 100%;
-	min-width: 100%;
+.category-name{
+	font-size: '1.1rem';
+	font-weight: '600';
+	color: '#333';
+}
+
+.chart-container{
+	background-color: #f8f9fa;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+	/* General Paginator Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+/* Page Links */
+.page-link {
+  background-color: #222529; /* #222529 background */
+  border: none; /* No border */
+  padding: 0.5rem 1rem; /* Adjust padding for a larger size */
+  border-radius: 5px; /* Slightly rounded corners */
+  margin: 0 0.25rem; /* Add spacing between buttons */
+  text-decoration: none; /* Remove underline */
+  transition: all 0.3s ease; /* Smooth hover transition */
+  font-size: 1rem; /* Slightly larger font size */
+}
+
+.page-link a{
+	color: #222529 !important;
+}
+/* Page Link Hover */
+.page-link:hover {
+  background-color: white; /* Invert colors */
+  color: #222529 !important; /* #222529 text */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow on hover */
+  transform: scale(1.05); /* Enlarge slightly */
+}
+
+/* Active Page */
+.page-item.active .page-link {
+  background-color: white; /* White background for active */
+  color: #222529 !important; /* #222529 text */
+  border: 1px solid #222529; /* Add a thin border */
+  font-weight: bold; /* Emphasize the active page */
+}
+
+/* Previous/Next Buttons */
+.page-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-item .page-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Previous/Next Buttons */
+.page-link{
+	color: #222529 !important;
+}
+
+/* Stylish Next/Previous Buttons */
+.stylish-btn {
+  background-color: #222529; /* #222529 background */
+  color: white; /* White text */
+  font-size: 1rem; /* Consistent font size with links */
+  border-radius: 5px; /* Slightly rounded corners */
+  margin: 0 0.5rem; /* Spacing between Next/Previous buttons */
+  text-decoration: none;
+  border: 1px solid #1a1a1a;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.stylish-btn a{
+	color: whitesmoke;
+	text-decoration: none;
+	display: flex;
+	width: 50px;
+	height: 50px;
+	    align-items: center;
+    justify-content: center;
+}
+
+.stylish-btn:hover {
+  background-color: white; /* Invert colors */
+  color: #222529; /* #222529 text */
+  transform: scale(1.05); /* Slightly larger on hover */
+}
+
+.stylish-btn:hover a{
+	color: #222529; /* #222529 text */
+	text-decoration: none;
+}
+
+.stylish-btn:active {
+  transform: scale(0.98); /* Shrink slightly on click */
+}
+
+.message-container{
+	display:none;
+	padding: 10px;
+	background-color: lightgreen;
+	border: 1px solid green;
+	margin-top: 20px;
 }

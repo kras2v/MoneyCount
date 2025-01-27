@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { Modal } from "react-bootstrap"
 import CategoryList from "./category-list";
 
@@ -17,7 +17,11 @@ const CategoryModal = (props) => {
 	}
 	return (
 		<>
-			<Modal show={props.show} onHide={props.handleClose} centered style={{ background: 'rgba(0,0,0,0.5)' }}>
+			<Modal 
+				show={props.show}
+				onHide={props.handleClose}
+				centered
+				style={{ background: 'rgba(0,0,0,0.5)' }}>
 				<Modal.Header closeButton>
 					<Modal.Title>
 						Choose your category
