@@ -2,7 +2,7 @@ import React from "react"
 import NoImage from "../../../public/icons/no-image.svg"
 import { useNavigate } from 'react-router-dom';
 
-const PaymentItem = (props) => {
+const TransactionItem = (props) => {
 	const navigate = useNavigate();
 	return (
 		<>
@@ -32,4 +32,4 @@ const PaymentItem = (props) => {
 	)
 }
 
-export default PaymentItem
+export default TransactionItem

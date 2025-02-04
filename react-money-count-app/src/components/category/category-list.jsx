@@ -5,7 +5,7 @@ const CategoryList = (props) => {
 	const [categories, setCategories] = useState([]);
 
 	useEffect(() => {
-		fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category")
+		fetch(import.meta.env.VITE_REACT_APP_API_URL + "categories")
 			.then(res => res.json())
 			.then(res => {
 				if (res.status === true && res.data.count > 0) {

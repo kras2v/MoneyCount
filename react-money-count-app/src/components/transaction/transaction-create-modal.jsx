@@ -1,8 +1,8 @@
 import React from "react"
 import { Modal } from "react-bootstrap"
-import EditPayment from "./payment-edit-form"
+import EditTransaction from "./transaction-edit-form"
 
-const CreatePaymentModal = (props) => {
+const CreateTransactionModal = (props) => {
 	return (
 		<>
 			<Modal
@@ -13,15 +13,15 @@ const CreatePaymentModal = (props) => {
 			>
 				<Modal.Header closeButton>
 					<Modal.Title>
-						Add new payment
+						Add new Transaction
 					</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					<EditPayment />
+					<EditTransaction />
 				</Modal.Body>
 			</Modal>
 		</>
 	)
 }
 
-export default CreatePaymentModal
+export default CreateTransactionModal

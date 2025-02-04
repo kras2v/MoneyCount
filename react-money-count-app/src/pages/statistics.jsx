@@ -1,191 +1,128 @@
 import React, { useEffect, useState } from "react";
-import $, { data } from "jquery";
-import { Chart } from "chart.js";
-import "daterangepicker";
-import "daterangepicker/daterangepicker.css";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import Markdown from "react-markdown";
 import moment from "moment";
-import { formatNumber } from "chart.js/helpers";
+import { createOutcomeChart, createIncomeChart } from "../components/statistics/create-chart";
+import DateRangePicker from "../components/statistics/date-range-picker"
+import { getTransactions, getCategories } from "../components/statistics/Transaction-category-requests"
+import { getTotalIncomes, getNewIncomes, getTotalOutcomes, getNewOutcomes, } from "../components/statistics/filter-utils"
 
 const Statistics = () => {
-	const [chartData, setChartData] = useState(null)
-	const [periodLabel, setPeriodLabel] = useState(null);
+	const [outcomeChartData, setOutcomeChartData] = useState(null)
+	const [incomeChartData, setIncomeChartData] = useState(null)
+
+	const [transactions, setTransactions] = useState(null);
 	const [categories, setCategories] = useState(null);
-	const [payments, setPayments] = useState(null);
-	const [newPayments, setNewPayments] = useState(null);
+
+	const [outcomes, setNewOutcomes] = useState(null);
+	const [incomes, setNewIncomes] = useState(null);
+
+	const [outcomesData, setNewOutcomesData] = useState(null);
+	const [incomesData, setNewIncomesData] = useState(null);
+
 	const [total, setTotal] = useState(0);
-	const [myChart, setMyChart] = useState(null);
 	const [isInit, setIsInit] = useState(null);
+	const [outcomePeriodLabel, setOutcomePeriodLabel] = useState(null);
 
-	const getPayments = () => {
-		if (payments === null) {
-			fetch(import.meta.env.VITE_REACT_APP_API_URL + "Payment/get-all-payments")
-				.then(res => res.json())
-				.then(res => {
-					if (res.status === true) {
-						setPayments(res.data.payments);
-						console.log("data received");
-					}
-				})
-				.catch(err => alert("Error getting data."));
-		}
+	const [loading, setLoading] = useState(false);
+	const [answer, setAnswer] = useState(null);
+
+	function handleDateChangeOutcome(start, end, label) {
+		setTotal(getTotalOutcomes(transactions, start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
+		setNewOutcomes(getNewOutcomes(transactions, start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
+		if (label === "Custom Range")
+			setOutcomePeriodLabel(" from " + start.format('YYYY-MM-DD') + " to " + end.format('YYYY-MM-DD'));
+		else
+			setOutcomePeriodLabel(label);
+		setAnswer(null);
 	}
 
-	const getDateRangePicker = () => {
-
-		function cb(start, end, label)
-		{
-			$('#chart-input input').html(start.format('YYYY-MM-DD') + ' - ' + end.format('YYYY-MM-DD'));
-			setTotal(getTotal(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
-			setNewPayments(getNewData(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
-			if (label === "Custom Range")
-				setPeriodLabel(" from " + start.format('YYYY-MM-DD') + " to " + end.format('YYYY-MM-DD'));
-			else
-				setPeriodLabel(label);
-			getContent();
+	const askAI = async () => {
+		setLoading(true);
+		setAnswer("");
+		try {
+			const outcomeDataJson = JSON.stringify(outcomesData);
+			const incomeDataJson = JSON.stringify(incomesData);
+			const genAI = new GoogleGenerativeAI("AIzaSyAH5-nJiYVADHFE7LFkY37HK2bzhZAYqrQ");
+			const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+			const prompt = `My spendings are following: ${outcomeDataJson} during ${outcomePeriodLabel},
+			BRIEFLY give me 3 advise how to improve my budget, please also keep in mind
+			my monthly income over last 6 months ${incomeDataJson}`;
+			const result = await model.generateContent(prompt);
+			setAnswer(result.response.text());
 		}
-
-		$('input[name="chart-input"]').daterangepicker({
-			autoUpdateInput: false,
-			locale: {
-				cancelLabel: 'Clear'
-			},
-			"showWeekNumbers": true,
-			ranges: {
-				'Today': [moment(), moment()],
-				'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-				'Over the Last 7 Days': [moment().subtract(6, 'days'), moment()],
-				'Over the Last 30 Days': [moment().subtract(29, 'days'), moment()],
-				'This Month': [moment().startOf('month'), moment().endOf('month')],
-				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-			},
-			"startDate": "01/16/2025",
-			"endDate": "01/22/2025"
-		}, function(start, end, label) {cb(start, end, label)});
-	}
-
-	const getAllCategories = () => {
-		if (categories === null) {
-			fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category")
-				.then(res => res.json())
-				.then(res => {
-					if (res.status === true && res.data.count > 0) {
-						setCategories(res.data.categories);
-					}
-					if (res.data.count === 0) {
-						alert("There is no category in a system.");
-					}
-				})
-				.catch(err => alert("Error getting data."));
+		catch (err) {
+			setAnswer("Error fetching AI response. Please try again.");
 		}
-	}
-
-	const getChart = () => {
-		if (newPayments){
-			setIsInit(true);
-			const data = categories.map(c => ({
-				category: c.name,
-				amount: newPayments.filter(p => p.category.id === c.id).reduce((x, y) => x + y.amount, 0)
-			}));
-			setChartData(data);
-			return (
-				new Chart(
-					document.getElementById('test-chart'),
-					{
-						type: 'doughnut',
-						data: {
-							labels: data.map(row => row.category),
-							datasets: [
-								{
-									label: 'Amount',
-									data: data.map(row => row.amount)
-								}
-							]
-						}
-					}
-				)
-			)
+		finally {
+			setLoading(false);
 		}
-	}
-
-	const getTotal = (start, end) => {
-		if (payments) {
-			return Math.round(payments
-				.filter(p => (moment(p.paymentDate.split('T')[0]).isSameOrAfter(start) && moment(p.paymentDate.split('T')[0]).isSameOrBefore(end)))
-				.filter(p => p.amount < 0)
-				.reduce((x, y) => x + y.amount, 0) * 100) / 100;
-		}
-	};
-
-	const getNewData = (start, end) => {
-		if (payments) {
-			return payments
-			.filter(p => (moment(p.paymentDate.split('T')[0]).isSameOrAfter(start) && moment(p.paymentDate.split('T')[0]).isSameOrBefore(end)))
-			.filter(p => p.amount < 0);
-		}
-	};
-
-	const getContent = async () => {
-		const dataJson = JSON.stringify(chartData);
-
-		const genAI = new GoogleGenerativeAI("AIzaSyAH5-nJiYVADHFE7LFkY37HK2bzhZAYqrQ");
-		const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-		const prompt = `My spendings are following: ${dataJson} during ${periodLabel},
-			BRIEFLY give me 3 advise how to improve my budget`;
-
-		const result = await model.generateContent(prompt);
-		console.log(result.response.text());
 	}
 
 	useEffect(() => {
+		const url = import.meta.env.VITE_REACT_APP_API_URL;
 		const today = moment().format('YYYY-MM-DD');
-		if (myChart)
-			myChart.destroy();
-		getPayments();
-		getAllCategories();
-		if (!newPayments)
-			setNewPayments(getNewData(today, today));
-		getDateRangePicker();
-		if (!periodLabel)
-			setPeriodLabel("Today");
-		if (categories && newPayments)
-		{
+		if (outcomeChartData) outcomeChartData.destroy();
+		if (incomeChartData) incomeChartData.destroy();
+
+		if (!transactions) getTransactions(url, setTransactions);
+		if (!categories) getCategories(url, setCategories);
+
+		if (!outcomes) setNewOutcomes(getNewOutcomes(transactions, today, today));
+		if (!outcomePeriodLabel) setOutcomePeriodLabel("Today");
+
+		if (!incomes) setNewIncomes(getNewIncomes(transactions));
+
+		if (categories && outcomes && incomes) {
 			if (total === 0 && !isInit)
-				setTotal(getTotal(moment().format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')))
-			setMyChart(getChart());
+				setTotal(getTotalOutcomes(transactions, today, today))
+			setOutcomeChartData(createOutcomeChart(categories, outcomes, setNewOutcomesData, 'outcome-chart'));
+			setIncomeChartData(createIncomeChart(categories, incomes, setNewIncomesData, 'income-chart'));
 			setIsInit(true);
 		}
-	}, [payments, categories, newPayments, isInit]);
+	}, [transactions, categories, outcomes, incomes, isInit]);
 
 	return (
 		<>
 			<div className="custom-container p-4">
-				<div className="summary-amount d-flex flex-row align-items-center justify-content-between mb-4">
-					<div className="count-amount" id="count-amount">
-						<h3 className="text-dark">{-total}{"₴ Spent "}
-							{periodLabel && periodLabel ? periodLabel : "Select date range"}</h3>
-					</div>
-				</div>
-				<div className="d-flex mt-5 flex-column align-items-center gap-4">
-					<div className="input-group w-75">
-						<div className="input-group-prerend">
-							<span className="input-group-text btn btn-dark">
-								<i className="fa-regular fa-calendar"></i>
-							</span>
+				<div className="d-flex flex-column align-items-center gap-4">
+					<div className="outcome-statistiscs d-flex flex-column align-items-center w-100 p-4 border rounded-lg shadow-lg bg-gray-50 max-w-md mx-auto">
+						<div className="summary-amount d-flex flex-row align-items-center justify-content-between mb-4">
+							<div className="count-amount" id="count-amount">
+								<h3 className="text-dark">{-total}{"₴ Spent "}
+									{outcomePeriodLabel && outcomePeriodLabel ? outcomePeriodLabel : "Select date range"}</h3>
+							</div>
 						</div>
-						<input 
-							className="form-control rounded-3 border-0 bg-dark text-white"
-							type="text"
-							id="chart-input"
-							name="chart-input"
-							placeholder="Select date range"
-							value={"Select date range"}
-							onChange={() => { }}
-						/>
+						<DateRangePicker onDateChange={handleDateChangeOutcome} />
+						<div className="d-flex mt-4 justify-content-between gap-3 w-100">
+							<div className="w-25 chart-container mt-4 d-flex align-items-center" style={{ minWidth: "30%", minHeight: "30%" }}>
+								<canvas className="" id="outcome-chart" />
+							</div>
+							<div className="w-75 h-100 ai-container">
+								<div className="text-center mb-4">
+									<button
+										onClick={askAI}
+										className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+										disabled={loading}
+									>
+										{loading ? "Asking AI..." : "Ask AI"}
+									</button>
+								</div>
+								<div className="text-block p-4 bg-white border rounded-lg shadow-md">
+									{answer ? (
+										<Markdown className="text-gray-800">{answer}</Markdown>
+									) : (
+										<p className="text-gray-400">The AI's answer will appear here.</p>
+									)}
+								</div>
+							</div>
+						</div>
 					</div>
-					<div className="chart-container mt-4" style={{maxWidth: "40%"}}>
-						<canvas className="w-100 h-100" id="test-chart" />
+					<div className="income-statistics d-flex mb-5 flex-column p-4 justify-content-center align-items-center w-100 border rounded-lg shadow-lg bg-gray-50 max-w-md mx-auto">
+						<h3> Income over last 6 months </h3>
+						<div className="chart-container mt-4 w-100">
+							<canvas className="" id="income-chart" />
+						</div>
 					</div>
 				</div>
 			</div>

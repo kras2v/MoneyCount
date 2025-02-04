@@ -19,7 +19,7 @@ const CategoryEditForm = (props) => {
 
 	useEffect(() => {
 		if (props.categoryId != null || props.categoryId != undefined) {
-			fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category/" + props.categoryId)
+			fetch(import.meta.env.VITE_REACT_APP_API_URL + "categories/" + props.categoryId)
 				.then(cat => cat.json())
 				.then(cat => {
 					if (cat.status === true && cat.data !== null) {
@@ -39,7 +39,7 @@ const CategoryEditForm = (props) => {
 	}, [])
 
 	const putCategory = (categoryToEdit) => {
-		fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category", {
+		fetch(import.meta.env.VITE_REACT_APP_API_URL + "categories", {
 			method: "PUT",
 			headers: {
 				'Accept': 'application/json',
@@ -60,7 +60,7 @@ const CategoryEditForm = (props) => {
 	}
 
 	const postCategory = (categoryToEdit) => {
-		fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category", {
+		fetch(import.meta.env.VITE_REACT_APP_API_URL + "categories", {
 			method: "POST",
 			headers: {
 				'Accept': 'application/json',
@@ -85,7 +85,7 @@ const CategoryEditForm = (props) => {
 		var file = event.target.files[0];
 		const form = new FormData();
 		form.append("iconFileName", file);
-		fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category/upload-category-icon", {
+		fetch(import.meta.env.VITE_REACT_APP_API_URL + "categories/upload-category-icon", {
 			method: "POST",
 			body: form
 		})
@@ -121,7 +121,7 @@ const CategoryEditForm = (props) => {
 	}
 
 	const deleteCategory = (id) => {
-		fetch(import.meta.env.VITE_REACT_APP_API_URL + "Category?id=" + id, {
+		fetch(import.meta.env.VITE_REACT_APP_API_URL + "categories?id=" + id, {
 			method: "DELETE",
 			headers: {
 				'Accept': 'application/json',

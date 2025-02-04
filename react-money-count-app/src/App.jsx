@@ -3,7 +3,7 @@ import { Container, Navbar, Nav } from 'react-bootstrap'
 import { BrowserRouter, Link, Routes, Route } from 'react-router-dom'
 import Landing from './pages/landing'
 import Categories from './pages/categories'
-import EditPayment from './components/payment/payment-edit-form'
+import EditTransaction from './components/transaction/transaction-edit-form'
 import Statistics from './pages/statistics'
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
 					<Navbar.Collapse id="navbar-nav">
 						<Nav className="ms-auto">
 							<Nav.Link as={Link} to="/" className="mx-2 text-light hover-effect">
-								📋 Payments
+								📋 Transactions
 							</Nav.Link>
 							<Nav.Link as={Link} to="/Categories" className="mx-2 text-light hover-effect">
 								🗂️ Categories
@@ -33,7 +33,7 @@ function App() {
 					<Route path="/" element={<Landing />} />
 					<Route path="/categories" element={<Categories />} />
 					<Route path="/statistics" element={<Statistics />} />
-					<Route path="/edit/:paymentid" element={<EditPayment />} />
+					<Route path="/edit/:Transactionid" element={<EditTransaction />} />
 				</Routes>
 			</BrowserRouter>
 		</Container>
