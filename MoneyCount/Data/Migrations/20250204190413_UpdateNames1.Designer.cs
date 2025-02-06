@@ -12,8 +12,8 @@ using MoneyCount.Data;
 namespace MoneyCount.Data.Migrations
 {
     [DbContext(typeof(MoneyCountDbContext))]
-    [Migration("20250116194942_Update")]
-    partial class Update
+    [Migration("20250204190413_UpdateNames1")]
+    partial class UpdateNames1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,26 +43,9 @@ namespace MoneyCount.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Food"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Transport"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Entertainment"
-                        });
                 });
 
-            modelBuilder.Entity("MoneyCount.Entities.Payment", b =>
+            modelBuilder.Entity("MoneyCount.Entities.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -99,7 +82,7 @@ namespace MoneyCount.Data.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("MoneyCount.Entities.Payment", b =>
+            modelBuilder.Entity("MoneyCount.Entities.Transaction", b =>
                 {
                     b.HasOne("MoneyCount.Entities.Category", "Category")
                         .WithMany()

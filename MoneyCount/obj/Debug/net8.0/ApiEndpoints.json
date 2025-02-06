@@ -2,7 +2,7 @@
   {
     "ContainingType": "MoneyCount.Controllers.CategoryController",
     "Method": "GetAllCategories",
-    "RelativePath": "api/Category",
+    "RelativePath": "api/categories",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -12,14 +12,30 @@
   {
     "ContainingType": "MoneyCount.Controllers.CategoryController",
     "Method": "PostCategory",
-    "RelativePath": "api/Category",
+    "RelativePath": "api/categories",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MoneyCount.Models.CategoryModel",
+        "Type": "MoneyCount.Models.Categories.CreateCategoryModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MoneyCount.Controllers.CategoryController",
+    "Method": "UpdateCategory",
+    "RelativePath": "api/categories",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "updatedModel",
+        "Type": "MoneyCount.Models.Categories.CategoryModel",
         "IsRequired": true
       }
     ],
@@ -28,7 +44,7 @@
   {
     "ContainingType": "MoneyCount.Controllers.CategoryController",
     "Method": "DeleteCategory",
-    "RelativePath": "api/Category",
+    "RelativePath": "api/categories",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -44,7 +60,7 @@
   {
     "ContainingType": "MoneyCount.Controllers.CategoryController",
     "Method": "GetCategoryById",
-    "RelativePath": "api/Category/{id}",
+    "RelativePath": "api/categories/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -59,29 +75,8 @@
   },
   {
     "ContainingType": "MoneyCount.Controllers.CategoryController",
-    "Method": "UpdateCategory",
-    "RelativePath": "api/Category/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "updatedModel",
-        "Type": "MoneyCount.Models.CategoryModel",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "MoneyCount.Controllers.CategoryController",
     "Method": "GetAllCategories",
-    "RelativePath": "api/Category/sorted-products/{id}",
+    "RelativePath": "api/categories/sorted-products/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -97,7 +92,7 @@
   {
     "ContainingType": "MoneyCount.Controllers.CategoryController",
     "Method": "UploadCategoryIcon",
-    "RelativePath": "api/Category/upload-category-icon",
+    "RelativePath": "api/categories/upload-category-icon",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -111,9 +106,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MoneyCount.Controllers.PaymentController",
+    "ContainingType": "MoneyCount.Controllers.TransactionController",
     "Method": "GetAllRecords",
-    "RelativePath": "api/Payment",
+    "RelativePath": "api/transactions",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -132,41 +127,41 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MoneyCount.Controllers.PaymentController",
-    "Method": "PostPayment",
-    "RelativePath": "api/Payment",
+    "ContainingType": "MoneyCount.Controllers.TransactionController",
+    "Method": "PostTransaction",
+    "RelativePath": "api/transactions",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "model",
-        "Type": "MoneyCount.Models.CreatePaymentModel",
+        "Type": "MoneyCount.Models.CreateTransactionModel",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MoneyCount.Controllers.PaymentController",
-    "Method": "UpdatePayment",
-    "RelativePath": "api/Payment",
+    "ContainingType": "MoneyCount.Controllers.TransactionController",
+    "Method": "UpdateTransaction",
+    "RelativePath": "api/transactions",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "updatedModel",
-        "Type": "MoneyCount.Models.PutPaymentModel",
+        "Type": "MoneyCount.Models.PutTransactionModel",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MoneyCount.Controllers.PaymentController",
-    "Method": "DeletePayment",
-    "RelativePath": "api/Payment",
+    "ContainingType": "MoneyCount.Controllers.TransactionController",
+    "Method": "DeleteTransaction",
+    "RelativePath": "api/transactions",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -180,9 +175,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MoneyCount.Controllers.PaymentController",
-    "Method": "GetPaymentById",
-    "RelativePath": "api/Payment/{id}",
+    "ContainingType": "MoneyCount.Controllers.TransactionController",
+    "Method": "GetTransactionById",
+    "RelativePath": "api/transactions/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -196,9 +191,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MoneyCount.Controllers.PaymentController",
-    "Method": "GetPayment",
-    "RelativePath": "api/Payment/Search/{searchText}",
+    "ContainingType": "MoneyCount.Controllers.TransactionController",
+    "Method": "GetTransaction",
+    "RelativePath": "api/transactions/Search/{searchText}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,

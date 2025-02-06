@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MoneyCount.Models
 {
-    public class PutPaymentModel : CreatePaymentModel
+    public class PutTransactionModel : CreateTransactionModel
     {
         public int Id { get; set; }
     }

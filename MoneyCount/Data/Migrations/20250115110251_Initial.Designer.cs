@@ -11,7 +11,7 @@ using MoneyCount.Data;
 
 namespace MoneyCount.Data.Migrations
 {
-    [DbContext(typeof(PaymentDbContext))]
+    [DbContext(typeof(MoneyCountDbContext))]
     [Migration("20250115110251_Initial")]
     partial class Initial
     {

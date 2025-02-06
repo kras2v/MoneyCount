@@ -12,8 +12,8 @@ using MoneyCount.Data;
 namespace MoneyCount.Data.Migrations
 {
     [DbContext(typeof(MoneyCountDbContext))]
-    [Migration("20250116194942_Update")]
-    partial class Update
+    [Migration("20250204191047_RenameFieldTransactions")]
+    partial class RenameFieldTransactions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,8 +33,14 @@ namespace MoneyCount.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Icon")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -43,26 +49,9 @@ namespace MoneyCount.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Food"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Transport"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Entertainment"
-                        });
                 });
 
-            modelBuilder.Entity("MoneyCount.Entities.Payment", b =>
+            modelBuilder.Entity("MoneyCount.Entities.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,17 +78,17 @@ namespace MoneyCount.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PaymentDate")
+                    b.Property<DateTime>("TransactionDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("MoneyCount.Entities.Payment", b =>
+            modelBuilder.Entity("MoneyCount.Entities.Transaction", b =>
                 {
                     b.HasOne("MoneyCount.Entities.Category", "Category")
                         .WithMany()

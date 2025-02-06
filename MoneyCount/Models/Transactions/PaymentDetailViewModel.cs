@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MoneyCount.Models
 {
-    public class PaymentDetailViewMode : PaymentListViewModel
+    public class TransactionDetailViewMode : TransactionListViewModel
     {
         public string Description { get; set; }
     }

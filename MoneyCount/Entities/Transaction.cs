@@ -2,7 +2,7 @@
 
 namespace MoneyCount.Entities
 {
-    public class Payment
+    public class Transaction
     {
         public int Id { get; set; }
         public required string Name { get; set; }
@@ -10,7 +10,7 @@ namespace MoneyCount.Entities
         public decimal Amount { get; set; }
         public int CategoryId { get; set; } 
         public required Category Category { get; set; }
-        public DateTime PaymentDate { get; set; } = DateTime.Now;
+        public DateTime TransactionDate { get; set; } = DateTime.Now;
         public DateTime CreatedDate {  get; set; } = DateTime.Now;
         public DateTime? ModifiedDate { get; set; }
     }

@@ -5,15 +5,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MoneyCount.Models
 {
-    public class CreatePaymentModel
+    public class CreateTransactionModel
     {
         [Required(ErrorMessage = "Name is required")]
         public required string Name { get; set; }
         public string? Description { get; set; }
-        [Required(ErrorMessage = "Amount of payment is required")]
+        [Required(ErrorMessage = "Amount of transaction is required")]
         public decimal Amount { get; set; }
         [Required(ErrorMessage = "Category is required")]
         public int CategoryId { get; set; }
-        public DateTime? PaymentDate { get; set; } = DateTime.Now;
+        public DateTime? TransactionDate { get; set; } = DateTime.Now;
     }
 }

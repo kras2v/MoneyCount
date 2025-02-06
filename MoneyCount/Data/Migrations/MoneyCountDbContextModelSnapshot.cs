@@ -3,7 +3,6 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoneyCount.Data;
 
@@ -12,11 +11,9 @@ using MoneyCount.Data;
 namespace MoneyCount.Data.Migrations
 {
     [DbContext(typeof(MoneyCountDbContext))]
-    [Migration("20250116194942_Update")]
-    partial class Update
+    partial class MoneyCountDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,8 +30,14 @@ namespace MoneyCount.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Icon")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -43,26 +46,9 @@ namespace MoneyCount.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Food"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Transport"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Entertainment"
-                        });
                 });
 
-            modelBuilder.Entity("MoneyCount.Entities.Payment", b =>
+            modelBuilder.Entity("MoneyCount.Entities.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,17 +75,17 @@ namespace MoneyCount.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PaymentDate")
+                    b.Property<DateTime>("TransactionDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("MoneyCount.Entities.Payment", b =>
+            modelBuilder.Entity("MoneyCount.Entities.Transaction", b =>
                 {
                     b.HasOne("MoneyCount.Entities.Category", "Category")
                         .WithMany()

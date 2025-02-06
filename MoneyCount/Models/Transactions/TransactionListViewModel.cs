@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MoneyCount.Models.Payment
 {
-    public class PaymentListViewModel
+    public class TransactionListViewModel
     {
         public int Id { get; set; }
         public string Name { get; set; }

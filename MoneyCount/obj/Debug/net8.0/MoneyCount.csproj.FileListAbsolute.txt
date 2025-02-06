@@ -168,3 +168,4 @@ C:\Users\Valeriia\source\repos\MoneyCount\MoneyCount\obj\Debug\net8.0\MoneyCount
 C:\Users\Valeriia\source\repos\MoneyCount\MoneyCount\obj\Debug\net8.0\ref\MoneyCount.dll
 C:\Users\Valeriia\source\repos\MoneyCount\MoneyCount\bin\Debug\net8.0\AutoMapper.dll
 C:\Users\Valeriia\source\repos\MoneyCount\MoneyCount\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\Valeriia\source\repos\MoneyCount\MoneyCount\obj\Debug\net8.0\MoneyCount.sourcelink.json

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,14 +11,14 @@ using MoneyCount.Models.Payment;
 
 namespace MoneyCount.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/transactions")]
     [ApiController]
-    public class PaymentController : ControllerBase
+    public class TransactionController : ControllerBase
     {
-        private readonly PaymentDbContext _context;
+        private readonly MoneyCountDbContext _context;
         private readonly IMapper _mapper;
 
-        public PaymentController(PaymentDbContext context, IMapper mapper)
+        public TransactionController(MoneyCountDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -40,22 +41,22 @@ namespace MoneyCount.Controllers
         {
             try
             {
-                var paymentCount = _context.Payments.Count();
-                var paymentList = _mapper.Map<List<PaymentListViewModel>>(
-                    _context.Payments
+                var transactionCount = _context.Transactions.Count();
+                var transactionList = _mapper.Map<List<TransactionListViewModel>>(
+                    _context.Transactions
                     .Include(p => p.Category)
-                    .OrderByDescending(p => p.PaymentDate)
+                    .OrderByDescending(p => p.TransactionDate)
                     .Skip(pageIndex * pageSize)
                     .Take(pageSize))
                     .ToList();
 
-                if (paymentCount > 0)
+                if (transactionCount > 0)
                 {
-                    return Ok(CreateResponse(true, "Success.", new { Payments = paymentList, Count = paymentCount }));
+                    return Ok(CreateResponse(true, "Success.", new { Transactions = transactionList, Count = transactionCount }));
                 }
                 else
                 {
-                    return BadRequest(CreateResponse(true, "No records yet.", new { Payments = paymentList, Count = paymentCount }));
+                    return Ok(CreateResponse(true, "No records yet.", new { Transactions = transactionList, Count = transactionCount }));
                 }
             }
             catch (Exception ex)
@@ -65,26 +66,26 @@ namespace MoneyCount.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetPaymentById(int id)
+        public IActionResult GetTransactionById(int id)
         {
             try
             {
                 if (id <= 0)
                 {
-                    return BadRequest(CreateResponse(false, "Invalid payment record.", null));
+                    return BadRequest(CreateResponse(false, "Invalid transaction record.", null));
                 }
 
-                var paymentById = _context.Payments
+                var transactionById = _context.Transactions
                     .Where(x => x.Id == id)
                     .Include(x => x.Category)
                     .FirstOrDefault();
 
-                if (paymentById == null)
+                if (transactionById == null)
                 {
-                    return BadRequest(CreateResponse(false, "Invalid payment record.", null));
+                    return BadRequest(CreateResponse(false, "Invalid transaction record.", null));
                 }
 
-                var responseData = _mapper.Map<PaymentDetailViewMode>(paymentById);
+                var responseData = _mapper.Map<TransactionDetailViewMode>(transactionById);
                 if (responseData == null)
                 {
                     return BadRequest(CreateResponse(false, "No record exists.", null));
@@ -99,7 +100,7 @@ namespace MoneyCount.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostPayment(CreatePaymentModel model)
+        public IActionResult PostTransaction(CreateTransactionModel model)
         {
 
             try
@@ -120,14 +121,14 @@ namespace MoneyCount.Controllers
                         throw exception;
                     }
 
-                    var paymentDate = model.PaymentDate.HasValue ? model.PaymentDate.Value : DateTime.Now;
-                    var newPayment = _mapper.Map<Payment>(model);
-                    newPayment.Category = category;
+                    var transactionDate = model.TransactionDate.HasValue ? model.TransactionDate.Value : DateTime.Now;
+                    var newtransaction = _mapper.Map<Transaction>(model);
+                    newtransaction.Category = category;
 
-                    _context.Payments.Add(newPayment);
+                    _context.Transactions.Add(newtransaction);
                     _context.SaveChanges();
 
-                    var responseData = _mapper.Map<PaymentDetailViewMode>(newPayment);
+                    var responseData = _mapper.Map<TransactionDetailViewMode>(newtransaction);
 
                     return Ok(CreateResponse(true, "Record has been created succesfully.", responseData));
                 }
@@ -143,24 +144,24 @@ namespace MoneyCount.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdatePayment(PutPaymentModel updatedModel)
+        public IActionResult UpdateTransaction(PutTransactionModel updatedModel)
         {
 
             try
             {
                 if (updatedModel.Id <= 0)
                 {
-                    return BadRequest(CreateResponse(false, "Invalid payment record", null));
+                    return BadRequest(CreateResponse(false, "Invalid transaction record", null));
                 }
                 if (ModelState.IsValid)
                 {
-                    var paymentToUpdate = _context.Payments
+                    var transactionToUpdate = _context.Transactions
                         .Where(x => x.Id == updatedModel.Id)
                         .Include(x => x.Category)
                         .FirstOrDefault();
-                    if (paymentToUpdate == null)
+                    if (transactionToUpdate == null)
                     {
-                        return BadRequest(CreateResponse(false, "Invalid payment record", null));
+                        return BadRequest(CreateResponse(false, "Invalid transaction record", null));
                     }
 
                     var category = _context.Categories
@@ -171,13 +172,13 @@ namespace MoneyCount.Controllers
                         return BadRequest(CreateResponse(false, "Wrong category assigned.", null));
                     }
                     
-                    var paymentDate = updatedModel.PaymentDate.HasValue ? updatedModel.PaymentDate.Value : DateTime.Now;
+                    var transactionDate = updatedModel.TransactionDate.HasValue ? updatedModel.TransactionDate.Value : DateTime.Now;
 
-                    _mapper.Map(updatedModel, paymentToUpdate);
+                    _mapper.Map(updatedModel, transactionToUpdate);
                     
                     _context.SaveChanges();
 
-                    var responseData = _mapper.Map<PaymentDetailViewMode>(paymentToUpdate);
+                    var responseData = _mapper.Map<TransactionDetailViewMode>(transactionToUpdate);
 
                     return Ok(CreateResponse(true, "Record has been updated succesfully", responseData));
                 }
@@ -193,25 +194,25 @@ namespace MoneyCount.Controllers
         }
 
         [HttpDelete]
-        public IActionResult DeletePayment(int id)
+        public IActionResult DeleteTransaction(int id)
         {
             try
             {
                 if (id <= 0)
                 {
-                    return BadRequest(CreateResponse(false, "Payment not found.", null));
+                    return BadRequest(CreateResponse(false, "transaction not found.", null));
                 }
 
-                var paymentToDelete = _context.Payments
+                var transactionToDelete = _context.Transactions
                     .Where(x => x.Id == id)
                     .FirstOrDefault();
 
-                if (paymentToDelete == null)
+                if (transactionToDelete == null)
                 {
-                    return BadRequest(CreateResponse(false, "Payment not found.", null));
+                    return BadRequest(CreateResponse(false, "transaction not found.", null));
                 }
 
-                _context.Payments.Remove(paymentToDelete);
+                _context.Transactions.Remove(transactionToDelete);
                 _context.SaveChanges();
 
                 return Ok(CreateResponse(true, "Deleted successfully", null));
@@ -224,15 +225,15 @@ namespace MoneyCount.Controllers
 
         [HttpGet]
         [Route("Search/{searchText}")]
-        public IActionResult GetPayment(string searchText)
+        public IActionResult GetTransaction(string searchText)
         {
             try
             {
-                var searchedPayment = _context.Payments
+                var searchedtransaction = _context.Transactions
                     .Where(x => x.Name.Contains(searchText))
                     .Select(x => new { x.Id, x.Name }).ToList();
 
-                return Ok(CreateResponse(true, "Success", searchedPayment));
+                return Ok(CreateResponse(true, "Success", searchedtransaction));
             }
             catch (Exception)
             {

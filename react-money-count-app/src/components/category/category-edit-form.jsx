@@ -84,7 +84,7 @@ const CategoryEditForm = (props) => {
 		event.preventDefault();
 		var file = event.target.files[0];
 		const form = new FormData();
-		form.append("iconFileName", file);
+		form.append("imageFile", file);
 		fetch(import.meta.env.VITE_REACT_APP_API_URL + "categories/upload-category-icon", {
 			method: "POST",
 			body: form
@@ -92,7 +92,7 @@ const CategoryEditForm = (props) => {
 			.then(res => res.json())
 			.then(res => {
 				var data = category;
-				data.icon = res.iconFileName;
+				data.icon = res.profileImage;
 				setCategory(oldData => {
 					return {
 						...oldData,
@@ -160,12 +160,12 @@ const CategoryEditForm = (props) => {
 							/>
 							<Form.Label
 								className="btn btn-dark w-100"
-								htmlFor="file-upload">
+								htmlFor="imageFile">
 								Choose an image
 							</Form.Label>
 							<input
 								type="file"
-								id="file-upload"
+								id="imageFile"
 								className="d-none"
 								onChange={handleIconUpload}
 							/>

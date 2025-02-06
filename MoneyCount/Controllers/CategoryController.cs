@@ -1,23 +1,25 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MoneyCount.Data;
 using MoneyCount.Entities;
 using MoneyCount.Models;
+using MoneyCount.Models.Categories;
 using MoneyCount.Models.Payment;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 
 namespace MoneyCount.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/categories")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly PaymentDbContext _context;
+        private readonly MoneyCountDbContext _context;
         private readonly IMapper _mapper;
 
-        public CategoryController(PaymentDbContext context, IMapper mapper)
+        public CategoryController(MoneyCountDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -68,7 +70,7 @@ namespace MoneyCount.Controllers
                     return BadRequest(CreateResponse(false, "Category not found.", null));
                 }
 
-                var responseData = _mapper.Map<List<PaymentListViewModel >>(_context.Payments
+                var responseData = _mapper.Map<List<TransactionListViewModel >>(_context.Transactions
                     .Where(x => x.CategoryId == categoryById.Id))
                     .ToList();
 
@@ -109,7 +111,7 @@ namespace MoneyCount.Controllers
         }
 
         [HttpPost]
-        public IActionResult PostCategory(CategoryModel model)
+        public IActionResult PostCategory(CreateCategoryModel model)
         {
             try
             {
@@ -118,10 +120,10 @@ namespace MoneyCount.Controllers
                     var newCategory = _context.Categories
                    .Where(x => x.Name == model.Name)
                    .FirstOrDefault();
-                    // if (newCategory != null)
-                    // {
-                    //     return BadRequest(CreateResponse(false, "Category has already exists.", null));
-                    // }
+                    if (newCategory != null)
+                    {
+                        return BadRequest(CreateResponse(false, "Category has already exists.", null));
+                    }
 
                     newCategory = _mapper.Map<Category>(model);
                     _context.Categories.Add(newCategory);
@@ -140,19 +142,19 @@ namespace MoneyCount.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateCategory(int id, CategoryModel updatedModel)
+        [HttpPut]
+        public IActionResult UpdateCategory(CategoryModel updatedModel)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (id <= 0)
+                    if (updatedModel.Id <= 0)
                     {
                         return BadRequest(CreateResponse(false, "Invalid category record.", null));
                     }
                     var categoryToUpdate = _context.Categories
-                        .Where(x => x.Id == id)
+                        .Where(x => x.Id == updatedModel.Id)
                         .FirstOrDefault();
                     if (categoryToUpdate == null)
                     {
@@ -223,14 +225,12 @@ namespace MoneyCount.Controllers
 
                 string[] allowedImageExtensions =
                 {
-                    ".jpg",
-                    ".jpeg",
-                    ".png"
+                    ".svg"
                 };
 
                 if (!allowedImageExtensions.Contains(Path.GetExtension(filename)))
                 {
-                    return BadRequest(CreateResponse(false, "Only .jpg, .jpeg and .png type files are allowed", null));
+                    return BadRequest(CreateResponse(false, "Only .svg type files are allowed", null));
                 }
 
                 string newFileName = Guid.NewGuid() + Path.GetExtension(filename);
@@ -243,7 +243,7 @@ namespace MoneyCount.Controllers
 
                 return Ok(new
                 {
-                    ProfileImage = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/StaticFiles/{newFileName}" 
+                    imageFile = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/StaticFiles/{newFileName}" 
                 });
             }
             catch (Exception)

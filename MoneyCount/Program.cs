@@ -9,10 +9,10 @@ var connectionString = builder.Configuration.GetConnectionString("SqlServerConne
 
 builder.Services.AddControllers();
 builder.Services.AddCors(opt => opt.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddEndpointsApiExplorer();     
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddDbContext<PaymentDbContext>(
+builder.Services.AddDbContext<MoneyCountDbContext>(
     options => options.UseSqlServer(connectionString));
 
 var app = builder.Build();
@@ -24,10 +24,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
 app.UseCors("AllowAll");
+app.UseHttpsRedirection();
+app.MapControllers();
 ClearDatabase(app);
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -41,12 +40,12 @@ static void ClearDatabase(IApplicationBuilder app)
 {
     using (var scope = app.ApplicationServices.CreateScope())
     {
-        var context = scope.ServiceProvider.GetRequiredService<PaymentDbContext>();
+        var context = scope.ServiceProvider.GetRequiredService<MoneyCountDbContext>();
 
         context.Database.ExecuteSqlRaw("DELETE FROM Categories WHERE Id NOT IN (1, 2, 3)");
-        context.Database.ExecuteSqlRaw("DELETE FROM Payments WHERE Id NOT IN (1, 2, 3)");
+        context.Database.ExecuteSqlRaw("DELETE FROM Transactions WHERE Id NOT IN (1, 2, 3)");
 
         context.Database.ExecuteSqlRaw($"DBCC CHECKIDENT ('Categories', RESEED, {context.Categories.Count()})");
-        context.Database.ExecuteSqlRaw($"DBCC CHECKIDENT ('Payments', RESEED, {context.Payments.Count()})");
+        context.Database.ExecuteSqlRaw($"DBCC CHECKIDENT ('Transactions', RESEED, {context.Transactions.Count()})");
     }
 }
