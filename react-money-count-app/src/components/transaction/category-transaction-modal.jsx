@@ -1,6 +1,6 @@
 import React from "react"
 import { Modal } from "react-bootstrap"
-import CategoryList from "./category-list";
+import CategoryList from "../category/category-list";
 
 const CategoryModal = (props) => {
 
@@ -9,7 +9,7 @@ const CategoryModal = (props) => {
 			props.setCategoryToUpdate({
 				id: param.data.id,
 				name: param.data.name,
-				icon:param.data.icon
+				icon: param.data.icon
 			});
 		}
 		console.log(param.data.id)
@@ -17,7 +17,7 @@ const CategoryModal = (props) => {
 	}
 	return (
 		<>
-			<Modal 
+			<Modal
 				show={props.show}
 				onHide={props.handleClose}
 				centered
@@ -28,9 +28,9 @@ const CategoryModal = (props) => {
 					</Modal.Title>
 				</Modal.Header>
 				<Modal.Body className="d-flex flex-column mx-auto">
-					<CategoryList
-						function={updateValueAndClose} 
-						amountInRow={3}/>
+					<CategoryList showRedirectButton={true}
+						function={updateValueAndClose}
+						amountInRow={3} />
 				</Modal.Body>
 			</Modal>
 		</>

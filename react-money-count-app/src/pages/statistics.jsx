@@ -2,34 +2,40 @@ import React, { useEffect, useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Markdown from "react-markdown";
 import moment from "moment";
-import { createOutcomeChart, createIncomeChart } from "../components/statistics/create-chart";
+import { createOutcomeChart, createIncomeChart, createIncomeOutcomeChart } from "../components/statistics/create-chart";
 import DateRangePicker from "../components/statistics/date-range-picker"
-import { getTransactions, getCategories } from "../components/statistics/Transaction-category-requests"
-import { getTotalIncomes, getNewIncomes, getTotalOutcomes, getNewOutcomes, } from "../components/statistics/filter-utils"
+import { getTransactions, getCategories } from "../components/statistics/transaction-category-requests"
+import { getNewTransactionsListOnDateRange, getTotalOnDateRange } from "../components/statistics/filter-utils"
 
 const Statistics = () => {
 	const [outcomeChartData, setOutcomeChartData] = useState(null)
 	const [incomeChartData, setIncomeChartData] = useState(null)
+	const [incomeOutcomeChartData, setIncomeOutcomeChartData] = useState(null)
 
 	const [transactions, setTransactions] = useState(null);
 	const [categories, setCategories] = useState(null);
 
-	const [outcomes, setNewOutcomes] = useState(null);
-	const [incomes, setNewIncomes] = useState(null);
+	const [outcomesOnDateRange, setNewOutcomesOnDateRange] = useState(null);
+	const [incomesOverSixMonths, setNewIncomesOverSixMonths] = useState(null);
+	const [outcomesOverSixMonths, setNewOutcomesOverSixMonths] = useState(null);
 
 	const [outcomesData, setNewOutcomesData] = useState(null);
 	const [incomesData, setNewIncomesData] = useState(null);
 
-	const [total, setTotal] = useState(0);
+	const [totalOutcomeOnRange, setTotalOutcomeOnRange] = useState(0);
 	const [isInit, setIsInit] = useState(null);
 	const [outcomePeriodLabel, setOutcomePeriodLabel] = useState(null);
 
 	const [loading, setLoading] = useState(false);
 	const [answer, setAnswer] = useState(null);
 
+	const today = moment().format('YYYY-MM-DD');
+	const lastDayOfCurrentMonth = moment().endOf('month');
+	const firstDaySixMonthsAgo = moment(lastDayOfCurrentMonth).subtract(6, 'months').startOf('month');
+
 	function handleDateChangeOutcome(start, end, label) {
-		setTotal(getTotalOutcomes(transactions, start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
-		setNewOutcomes(getNewOutcomes(transactions, start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
+		setTotalOutcomeOnRange(getTotalOnDateRange(transactions, start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
+		setNewOutcomesOnDateRange(getNewTransactionsListOnDateRange(transactions, start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD')));
 		if (label === "Custom Range")
 			setOutcomePeriodLabel(" from " + start.format('YYYY-MM-DD') + " to " + end.format('YYYY-MM-DD'));
 		else
@@ -61,26 +67,28 @@ const Statistics = () => {
 
 	useEffect(() => {
 		const url = import.meta.env.VITE_REACT_APP_API_URL;
-		const today = moment().format('YYYY-MM-DD');
 		if (outcomeChartData) outcomeChartData.destroy();
 		if (incomeChartData) incomeChartData.destroy();
+		if (incomeOutcomeChartData) incomeOutcomeChartData.destroy();
 
 		if (!transactions) getTransactions(url, setTransactions);
 		if (!categories) getCategories(url, setCategories);
 
-		if (!outcomes) setNewOutcomes(getNewOutcomes(transactions, today, today));
+		if (!outcomesOnDateRange) setNewOutcomesOnDateRange(getNewTransactionsListOnDateRange(transactions, today, today, false));
 		if (!outcomePeriodLabel) setOutcomePeriodLabel("Today");
 
-		if (!incomes) setNewIncomes(getNewIncomes(transactions));
+		if (!incomesOverSixMonths) setNewIncomesOverSixMonths(getNewTransactionsListOnDateRange(transactions, firstDaySixMonthsAgo, lastDayOfCurrentMonth, true));
+		if (!outcomesOverSixMonths) setNewOutcomesOverSixMonths(getNewTransactionsListOnDateRange(transactions, firstDaySixMonthsAgo, lastDayOfCurrentMonth, false));
 
-		if (categories && outcomes && incomes) {
-			if (total === 0 && !isInit)
-				setTotal(getTotalOutcomes(transactions, today, today))
-			setOutcomeChartData(createOutcomeChart(categories, outcomes, setNewOutcomesData, 'outcome-chart'));
-			setIncomeChartData(createIncomeChart(categories, incomes, setNewIncomesData, 'income-chart'));
+		if (categories && outcomesOnDateRange && incomesOverSixMonths) {
+			if (totalOutcomeOnRange === 0 && !isInit)
+				setTotalOutcomeOnRange(getTotalOnDateRange(transactions, today, today))
+			setOutcomeChartData(createOutcomeChart(categories, outcomesOnDateRange, setNewOutcomesData, 'outcome-chart'));
+			setIncomeChartData(createIncomeChart(categories, incomesOverSixMonths, setNewIncomesData, 'income-chart'));
+			setIncomeOutcomeChartData(createIncomeOutcomeChart(incomesOverSixMonths, outcomesOverSixMonths, 'income-outcome-chart'));
 			setIsInit(true);
 		}
-	}, [transactions, categories, outcomes, incomes, isInit]);
+	}, [transactions, categories, outcomesOnDateRange, incomesOverSixMonths, isInit]);
 
 	return (
 		<>
@@ -89,7 +97,7 @@ const Statistics = () => {
 					<div className="outcome-statistiscs d-flex flex-column align-items-center w-100 p-4 border rounded-lg shadow-lg bg-gray-50 max-w-md mx-auto">
 						<div className="summary-amount d-flex flex-row align-items-center justify-content-between mb-4">
 							<div className="count-amount" id="count-amount">
-								<h3 className="text-dark">{-total}{"₴ Spent "}
+								<h3 className="text-dark">{-totalOutcomeOnRange}{"₴ Spent "}
 									{outcomePeriodLabel && outcomePeriodLabel ? outcomePeriodLabel : "Select date range"}</h3>
 							</div>
 						</div>
@@ -120,8 +128,14 @@ const Statistics = () => {
 					</div>
 					<div className="income-statistics d-flex mb-5 flex-column p-4 justify-content-center align-items-center w-100 border rounded-lg shadow-lg bg-gray-50 max-w-md mx-auto">
 						<h3> Income over last 6 months </h3>
-						<div className="chart-container mt-4 w-100">
+						<div className="chart-container mt-4 w-100 d-flex justify-content-center">
 							<canvas className="" id="income-chart" />
+						</div>
+					</div>
+					<div className="income-statistics d-flex mb-5 flex-column p-4 justify-content-center align-items-center w-100 border rounded-lg shadow-lg bg-gray-50 max-w-md mx-auto">
+						<h3> Income vs outcome over last 6 months </h3>
+						<div className="chart-container mt-4 w-100 d-flex justify-content-center">
+							<canvas className="" id="income-outcome-chart" />
 						</div>
 					</div>
 				</div>

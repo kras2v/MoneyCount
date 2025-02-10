@@ -1,4 +1,3 @@
-import { Chart } from "chart.js";
 
 export const createOutcomeChart = (categories, newTransactions, setChartData, chartName) => {
 	if (newTransactions) {
@@ -29,19 +28,20 @@ export const createOutcomeChart = (categories, newTransactions, setChartData, ch
 
 export const createIncomeChart = (categories, newTransactions, setChartData, chartName) => {
 	if (newTransactions) {
-		const months = [moment().format("MMMM"),
-		moment().subtract(1, "month").format("MMMM"),
-		moment().subtract(2, "month").format("MMMM"),
-		moment().subtract(3, "month").format("MMMM"),
-		moment().subtract(4, "month").format("MMMM"),
+		const months = [
+		moment().subtract(6, "month").format("MMMM"), 
 		moment().subtract(5, "month").format("MMMM"),
-		moment().subtract(6, "month").format("MMMM"),
+		moment().subtract(4, "month").format("MMMM"),
+		moment().subtract(3, "month").format("MMMM"),
+		moment().subtract(2, "month").format("MMMM"),
+		moment().subtract(1, "month").format("MMMM"),
+		moment().format("MMMM"),
 		];
 		console.log(months);
 		const data = months.map(m => ({
 			month: m,
 			amount: newTransactions
-				.filter(p => moment(p.paymentDate.split("T")[0]).format("MMMM") === m)
+				.filter(p => moment(p.transactionDate.split("T")[0]).format("MMMM") === m)
 				.reduce((x, y) => x + y.amount, 0)
 		}));
 		setChartData(data);
@@ -55,6 +55,52 @@ export const createIncomeChart = (categories, newTransactions, setChartData, cha
 						{
 							label: 'Amount',
 							data: data.map(row => row.amount)
+						}
+					]
+				}
+			}
+		)
+	}
+}
+
+export const createIncomeOutcomeChart = (newIncomes, newOutcomes, chartName) => {
+	if (newIncomes && newOutcomes) {
+		const months = [
+			moment().subtract(6, "month").format("MMMM"),
+			moment().subtract(5, "month").format("MMMM"),
+			moment().subtract(4, "month").format("MMMM"),
+			moment().subtract(3, "month").format("MMMM"),
+			moment().subtract(2, "month").format("MMMM"),
+			moment().subtract(1, "month").format("MMMM"),
+			moment().format("MMMM"),
+		];
+		console.log(months);
+		const income = months.map(m => ({
+			month: m,
+			amount: newIncomes
+				.filter(p => moment(p.transactionDate.split("T")[0]).format("MMMM") === m)
+				.reduce((x, y) => x + y.amount, 0)
+		}));
+		const outcome = months.map(m => ({
+			month: m,
+			amount: newOutcomes
+				.filter(p => moment(p.transactionDate.split("T")[0]).format("MMMM") === m)
+				.reduce((x, y) => x + y.amount, 0)
+		}));
+		return new Chart(
+			document.getElementById(chartName),
+			{
+				type: 'bar',
+				data: {
+					labels: income.map(row => row.month),
+					datasets: [
+						{
+							label: 'Income',
+							data: income.map(row => row.amount)
+						},
+						{
+							label: 'Outcome',
+							data: outcome.map(row => row.amount)
 						}
 					]
 				}

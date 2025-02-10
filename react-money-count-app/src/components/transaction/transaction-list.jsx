@@ -3,12 +3,16 @@ import TransactionItem from "./transaction-item";
 import ReactPaginate from "react-paginate";
 import TransactionSearch from "./transaction-search"
 import { Fragment } from "react";
+import CustomToast, { showMessageWindow } from "../toast";
 
 const TransactionList = () => {
 	const [Transactions, setTransactions] = useState(null);
 	const [TransactionsCount, setTransactionsCount] = useState(0);
 	const [page, setPage] = useState(0);
 	const [filteredTransactions, setFilteredTransactions] = useState(null);
+
+	const [message, setMessage] = useState("");
+	const [showMessage, setShowMessage] = useState(false);
 
 	useEffect(() => {
 		getTransactions();
@@ -20,8 +24,10 @@ const TransactionList = () => {
 			"transactions?pageIndex=" +
 			page +
 			"&pageSize=" +
-			import.meta.env.VITE_REACT_APP_PAGING_SIZE
-		)
+			import.meta.env.VITE_REACT_APP_PAGING_SIZE, {
+				method: "GET",
+				credentials: "include"
+			})
 			.then((res) => res.json())
 			.then((res) => {
 				if (res.status === true && res.data.count > 0) {
@@ -30,10 +36,10 @@ const TransactionList = () => {
 					setTransactionsCount(Math.ceil(res.data.count / import.meta.env.VITE_REACT_APP_PAGING_SIZE));
 				}
 				if (res.data.count === 0) {
-					alert("There is no transaction in the system.");
+					showMessageWindow({ message: "There is no transaction in the system.", setMessage, setShowMessage })
 				}
 			})
-			.catch(() => alert("Error getting data."));
+			.catch(() => showMessageWindow({ message: "Error occured while loading transactions", setMessage, setShowMessage }));
 	};
 
 	const handlePageClick = (pageIndex) => {
@@ -43,7 +49,7 @@ const TransactionList = () => {
 	const getUnique = (Transactions) => {
 		const uniqueArrayOfDates = [
 			...new Set(
-				Transactions.map((paym) => paym.paymentDate.split("T")[0])
+				Transactions.map((paym) => paym.transactionDate.split("T")[0])
 			),
 		];
 		return uniqueArrayOfDates;
@@ -61,7 +67,7 @@ const TransactionList = () => {
 							<h4 className="text-center text-secondary">{new Date(date).toUTCString().slice(4, 16)}</h4>
 						</div>
 						{filteredTransactions
-							.filter((p) => p.paymentDate.split("T")[0] === date)
+							.filter((p) => p.transactionDate.split("T")[0] === date)
 							.map((p) => (
 								<TransactionItem key={p.id} data={p} />
 							))}
@@ -91,6 +97,7 @@ const TransactionList = () => {
 					activeClassName={"active"}
 				/>
 			</div>
+			<CustomToast message={message} setShow={setShowMessage} show={showMessage} />
 		</>
 	);
 };

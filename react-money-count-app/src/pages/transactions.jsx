@@ -1,8 +1,8 @@
 import React, { useState } from "react"
-import TransactionsList from "../components/transaction/Transaction-list"
+import TransactionsList from "../components/transaction/transaction-list"
 import CreateTransactionModel from "../components/transaction/transaction-create-modal"
 
-const Landing = () => {
+const Transactions = () => {
 	const [show, setShow] = useState(false);
 
 	return (
@@ -31,4 +31,4 @@ const Landing = () => {
 	)
 }
 
-export default Landing
+export default Transactions

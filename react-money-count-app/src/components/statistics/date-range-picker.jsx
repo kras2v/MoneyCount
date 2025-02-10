@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import moment from "moment";
-import $, { data } from "jquery";
+import $ from "jquery";
 import "daterangepicker";
 import "daterangepicker/daterangepicker.css";
 
-const DateRangePicker = ({ onDateChange }) => {
+const DateRangePicker = ({ 	onDateChange }) => {
 	useEffect(() => {
 		$('input[name="chart-input"]').daterangepicker({
 			autoUpdateInput: false,

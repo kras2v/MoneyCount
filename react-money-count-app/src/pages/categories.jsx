@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react"
 import CategoryList from "../components/category/category-list";
-import CategoryCreateModal from "../components/category/category-create-modal"
+import CategoryCreateModal from "../components/category/category-edit-create-modal"
 import New from "../../public/icons/new.svg"
-import { Chart } from "chart.js/auto";
 
 const Categories = () => {
 	const [categoryId, setCategoryId] = useState(null);
 	const [show, setShow] = useState(false);
-	const [chart, setChart] = useState(null);
 
 	return (
 		<>
@@ -25,7 +23,7 @@ const Categories = () => {
 					</div>
 				</div>
 				<div className="row">
-					<CategoryList function={(props) => { setCategoryId(props.data.id); setShow(true); }}
+					<CategoryList showRedirectButton={false} function={(props) => { setCategoryId(props.data.id); setShow(true); }}
 						amountInRow={100000000} />
 				</div>
 				<div className="">
