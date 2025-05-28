@@ -7,8 +7,39 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
+# Environment files
+.env
+.env.*
+
+# Secrets
+appsettings.Development.json  # Optional: if it contains secrets, otherwise version it
+
+# Build results
+bin/
+obj/
+publish/
+
+# Auto-generated files
+*.tlog
+*.cache
+*.ilk
+*.tmp
+*.pdb
+*.db
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET specific
+project.lock.json
+project.fragment.lock.json
+
+# Node/NPM (if using frontend)
+node_modules/
+dist/
 dist-ssr
 *.local
 
@@ -17,10 +48,10 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
-*.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-.vs
+# Visual Studio
+.vs/
